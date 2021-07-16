@@ -6,13 +6,26 @@
  * User Manual available at https://docs.gradle.org/7.1.1/userguide/building_java_projects.html
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.31"
+    id("org.jetbrains.kotlin.jvm")
 
-    // Apply the application plugin to add support for building a CLI application in Java.
-    application
+    id("io.spring.dependency-management")
+    id("org.springframework.boot")
+
+    // spring-kotlin
+    // kotlin: spring (proxy) related plugins see: https://kotlinlang.org/docs/reference/compiler-plugins.html
+    kotlin("plugin.spring")
+    kotlin("plugin.noarg")
+    kotlin("plugin.allopen")
+
+  id("com.netflix.dgs.codegen")
+
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -25,18 +38,36 @@ dependencies {
 
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    //implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    // This dependency is used by the application.
-    implementation("com.google.guava:guava:30.1-jre")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    //implementation("com.github.javafaker:javafaker:1.+")
 
-    // Use the Kotlin test library.
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-    // Use the Kotlin JUnit integration.
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    /*
+    implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"))
+    implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
+    implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
+    */
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-application {
-    // Define the main class for the application.
-    mainClass.set("com.example.demo.AppKt")
+
+
+
+tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
+    language = "kotlin"
+    generateClient = false
+    packageName = "com.example.demo.generated"
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "1.8"
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
