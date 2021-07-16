@@ -44,11 +44,12 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     //implementation("com.github.javafaker:javafaker:1.+")
 
-    /*
+    // dgs
     implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"))
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
-    */
+
+    // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
@@ -56,6 +57,8 @@ dependencies {
 
 
 tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
+    // see: https://netflix.github.io/dgs/generating-code-from-schema/
+
     language = "kotlin"
     generateClient = false
     packageName = "com.example.demo.generated"
