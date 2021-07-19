@@ -1,8 +1,11 @@
 package com.example.demo.service
 
+import com.example.demo.db.ShowsTable
 import com.example.demo.generated.types.AddShowInput
 import com.example.demo.generated.types.Show
+import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -18,7 +21,13 @@ class ShowsService {
 
     )
 
+    @Transactional
     fun shows(): List<Show> {
+        val records = ShowsTable.selectAll()
+            .map { ShowsTable.mapRowToRecord(it) }
+
+
+
         return shows.toList()
     }
 

@@ -40,6 +40,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    // logging
+    implementation("io.github.microutils:kotlin-logging:1.7.+")
+
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     //implementation("com.github.javafaker:javafaker:1.+")
@@ -54,6 +57,13 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
 
+    // db: exposed sql client
+    val exposedVersion = "0.31.1" // "0.31.1"
+    // note: exposed 0.32.1 changed behaviour of spring transaction
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+    implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
