@@ -6,5 +6,15 @@ type Show {
     id: Int!
     title: String!
     releaseYear: Int
-
+    reviews: [Review]
 }
+
+type Review {
+    id: Int!
+    showId: Int!
+    username: String
+    starScore: Int
+    submittedDate: DateTime
+}
+
+scalar DateTime
