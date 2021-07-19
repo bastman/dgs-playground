@@ -44,6 +44,7 @@ class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
      * Although the DataLoader is called for each individual show ID, it will batch up the actual loading to a single method call to the "load" method in the ReviewsDataLoader.
      * For this to work correctly, the datafetcher needs to return a CompletableFuture.
      */
+// Show.reviews  (async)
     @DgsData(parentType = DgsConstants.SHOW.TYPE_NAME, field = DgsConstants.SHOW.Reviews)
     fun reviews(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Review>>? {
         //Instead of loading a DataLoader by name, we can use the DgsDataFetchingEnvironment and pass in the DataLoader classname.
@@ -54,6 +55,21 @@ class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
         val show = dfe.getSource<Show>()
 
         //Load the reviews from the DataLoader. This call is async and will be batched by the DataLoader mechanism.
-        return reviewsDataLoader.load(show.id)
+        val out = reviewsDataLoader.load(show.id)
+        return out
     }
+
+
+
+    /*
+    // Show.reviews  (sync)
+    // n+1 ???
+    @DgsData(parentType = "Show", field = "reviews")
+    fun reviews(dfe: DgsDataFetchingEnvironment): List<Review>? {
+        val show = dfe.getSource<Show>()
+        val out = reviewsService.reviewsForShows(showIds = listOf(show.id))
+        return out
+    }
+
+     */
 }
