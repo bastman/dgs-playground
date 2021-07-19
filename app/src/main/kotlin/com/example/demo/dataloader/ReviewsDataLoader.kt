@@ -8,6 +8,7 @@ import org.dataloader.MappedBatchLoader
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 
+/*
 @DgsDataLoader(name = DgsConstants.SHOW.Reviews)
 class ReviewsDataLoader(val reviewsService: ReviewsService): MappedBatchLoader<Int, List<Review>> {
     /**
@@ -22,3 +23,5 @@ class ReviewsDataLoader(val reviewsService: ReviewsService): MappedBatchLoader<I
     }
 
 }
+
+ */

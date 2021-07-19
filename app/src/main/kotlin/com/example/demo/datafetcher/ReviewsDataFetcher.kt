@@ -1,5 +1,6 @@
 package com.example.demo.datafetcher
 
+import com.example.demo.dataloader.ReviewsDataLoaderWithContext
 import com.example.demo.generated.DgsConstants
 import com.example.demo.generated.types.Review
 import com.example.demo.generated.types.Show
@@ -8,6 +9,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.DgsQuery
+import java.util.concurrent.CompletableFuture
 
 
 @DgsComponent
@@ -22,12 +24,36 @@ class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
         return out
     }
 
+    /*
     @DgsData(parentType = DgsConstants.SHOW.TYPE_NAME, field = DgsConstants.SHOW.Reviews)
     fun reviewsForShows(dfe: DgsDataFetchingEnvironment): List<Review>? {
         val show = dfe.getSource<Show>()
         //Load the reviews from the pre-loaded localContext.
-        val reviewsForShows: Map<Int, List<Review>> = dfe.getLocalContext()
-        val out = reviewsForShows.get(show.id);
+        val reviewsByShowId: Map<Int, List<Review>> ? = dfe.getLocalContext()
+        val showId:Int = show.id
+        val out = reviewsByShowId?.get(showId);
         return out
+    }
+
+     */
+
+    /**
+     * This datafetcher will be called to resolve the "reviews" field on a Show.
+     * It's invoked for each individual Show, so if we would load 10 shows, this method gets called 10 times.
+     * To avoid the N+1 problem this datafetcher uses a DataLoader.
+     * Although the DataLoader is called for each individual show ID, it will batch up the actual loading to a single method call to the "load" method in the ReviewsDataLoader.
+     * For this to work correctly, the datafetcher needs to return a CompletableFuture.
+     */
+    @DgsData(parentType = DgsConstants.SHOW.TYPE_NAME, field = DgsConstants.SHOW.Reviews)
+    fun reviews(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Review>>? {
+        //Instead of loading a DataLoader by name, we can use the DgsDataFetchingEnvironment and pass in the DataLoader classname.
+        val reviewsDataLoader = dfe.getDataLoader<Int, List<Review>>(
+            ReviewsDataLoaderWithContext::class.java)
+
+        //Because the reviews field is on Show, the getSource() method will return the Show instance.
+        val show = dfe.getSource<Show>()
+
+        //Load the reviews from the DataLoader. This call is async and will be batched by the DataLoader mechanism.
+        return reviewsDataLoader.load(show.id)
     }
 }
