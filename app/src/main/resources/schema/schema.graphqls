@@ -1,5 +1,6 @@
 type Query {
     shows(titleFilter: String): [Show]
+    reviews:[Review]
 }
 
 type Show {
@@ -15,6 +16,22 @@ type Review {
     username: String
     starScore: Int
     submittedDate: DateTime
+}
+
+type Mutation {
+    addShow(show: AddShowInput): Show
+    addReview(review: AddReviewInput): Review
+}
+
+input AddShowInput {
+    title: String!
+    releaseYear: Int
+}
+
+input AddReviewInput {
+    showId: Int!
+    username: String!
+    starScore: Int!
 }
 
 scalar DateTime
