@@ -21,13 +21,6 @@ fun main(args: Array<String>) {
 
 
 
-@DgsComponent
-class DateTimeScalarRegistration {
 
-    @DgsRuntimeWiring
-    fun addScalar(builder: RuntimeWiring.Builder): RuntimeWiring.Builder {
-        return builder.scalar(ExtendedScalars.DateTime)
-    }
-}
 
 

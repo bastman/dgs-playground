@@ -7,6 +7,7 @@ type Show {
     id: Int!
     title: String!
     releaseYear: Int
+    someUUID: UUID
     reviews: [Review]
 }
 
@@ -26,6 +27,7 @@ type Mutation {
 input AddShowInput {
     title: String!
     releaseYear: Int
+    someUUID: UUID
 }
 
 input AddReviewInput {
@@ -35,3 +37,4 @@ input AddReviewInput {
 }
 
 scalar DateTime
+scalar UUID
