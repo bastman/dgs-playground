@@ -1,0 +1,17 @@
+version: '3.2'
+services:
+  dgs-playground-db:
+    image: library/postgres:9.6.3-alpine
+    ports:
+      - "5432:5432"
+    networks:
+      - dgs-playground-network
+    volumes:
+#      - dgs-playground-db-volume:/var/lib/postgresql/data
+      - type: bind
+        source: ./docker-entrypoint-initdb.d/
+        target: /docker-entrypoint-initdb.d/
+networks:
+  dgs-playground-network: {}
+volumes:
+  dgs-playground-db-volume: {}
