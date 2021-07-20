@@ -14,6 +14,16 @@ http://localhost:8080/graphiql
 
 - transaction management is weird: it creates a new transaction for each query instead of joining the current transaction
 
+## runbook
+
+### start a  local db
+```
+$ make db-local.up
+
+```
+
+
+### example queries
 ```
 
 {
