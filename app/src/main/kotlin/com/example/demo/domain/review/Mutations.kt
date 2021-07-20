@@ -17,7 +17,6 @@ class ReviewMutations(
 
     @DgsData(parentType = DgsConstants.MUTATION.TYPE_NAME,
         field = DgsConstants.MUTATION.AddReview) // field={{name_of_mutation}}
-    @Transactional(readOnly = false)
     fun addReview(@InputArgument("input") input: AddReviewInput): Review {
         return addReview.handle(input)
     }
