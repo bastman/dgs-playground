@@ -25,6 +25,7 @@ import graphql.execution.instrumentation.parameters.InstrumentationFieldFetchPar
 import graphql.schema.DataFetcher
 import graphql.schema.GraphQLNonNull
 import graphql.schema.GraphQLObjectType
+import mu.KLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -35,8 +36,7 @@ import java.util.concurrent.CompletableFuture
  */
 @Component
 class ExampleTracingInstrumentation : SimpleInstrumentation() {
-
-    val logger: Logger = LoggerFactory.getLogger(ExampleTracingInstrumentation::class.java)
+    companion object:KLogging()
 
     override fun createState(): InstrumentationState {
         return TraceState()
