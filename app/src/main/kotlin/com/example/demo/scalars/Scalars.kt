@@ -10,8 +10,6 @@ import graphql.schema.CoercingParseLiteralException
 import graphql.schema.CoercingParseValueException
 import graphql.schema.CoercingSerializeException
 import graphql.schema.idl.RuntimeWiring
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -28,8 +26,8 @@ class DateTimeScalarRegistration {
 class UUIDScalar : Coercing<UUID, String> {
     @Throws(CoercingSerializeException::class)
     override fun serialize(dataFetcherResult: Any): String {
-        return when(dataFetcherResult) {
-            is UUID->dataFetcherResult.toString()
+        return when (dataFetcherResult) {
+            is UUID -> dataFetcherResult.toString()
             else -> throw CoercingSerializeException("Not a valid uuid")
         }
     }
@@ -42,7 +40,7 @@ class UUIDScalar : Coercing<UUID, String> {
     @Throws(CoercingParseLiteralException::class)
     override fun parseLiteral(input: Any): UUID {
         if (input is StringValue) {
-            val a=(input as StringValue).getValue()
+            val a = (input as StringValue).getValue()
             return UUID.fromString(a)
         }
         throw CoercingParseLiteralException("Value is not a valid uuid")

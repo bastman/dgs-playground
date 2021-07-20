@@ -1,6 +1,9 @@
 package com.example.demo.datafetcher
 
 import com.example.demo.dataloader.ReviewsDataLoaderWithContext
+import com.example.demo.db.ReviewsRecord
+import com.example.demo.db.ReviewsTable
+import com.example.demo.db.toReviewDto
 import com.example.demo.generated.DgsConstants
 import com.example.demo.generated.types.Review
 import com.example.demo.generated.types.Show
@@ -9,18 +12,32 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.DgsQuery
+import mu.KLogging
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 
 @DgsComponent
 class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
+    companion object:KLogging()
+
     /**
      * This datafetcher resolves the shows field on Query.
      * It uses an @InputArgument to get the titleFilter from the Query if one is defined.
      */
     @DgsQuery(field = DgsConstants.QUERY.Reviews)
+    @Transactional(readOnly = true)
     fun reviews(): List<Review> {
-        val out = reviewsService.reviews()
+
+        val table = ReviewsTable
+        val records: List<ReviewsRecord> = table.selectAll()
+            .map(table::mapRowToRecord)
+
+        //val out = reviewsService.reviews()
+        val out = records.map { it.toReviewDto() }
         return out
     }
 
@@ -46,19 +63,20 @@ class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
      */
 // Show.reviews  (async)
     @DgsData(parentType = DgsConstants.SHOW.TYPE_NAME, field = DgsConstants.SHOW.Reviews)
+    @Transactional(readOnly = false)
     fun reviews(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Review>>? {
+        logger.info { "thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
         //Instead of loading a DataLoader by name, we can use the DgsDataFetchingEnvironment and pass in the DataLoader classname.
-        val reviewsDataLoader = dfe.getDataLoader<Int, List<Review>>(
+        val reviewsDataLoader = dfe.getDataLoader<UUID, List<Review>>(
             ReviewsDataLoaderWithContext::class.java)
 
         //Because the reviews field is on Show, the getSource() method will return the Show instance.
         val show = dfe.getSource<Show>()
 
         //Load the reviews from the DataLoader. This call is async and will be batched by the DataLoader mechanism.
-        val out = reviewsDataLoader.load(show.id)
+        val out = reviewsDataLoader.load(show.showId)
         return out
     }
-
 
 
     /*

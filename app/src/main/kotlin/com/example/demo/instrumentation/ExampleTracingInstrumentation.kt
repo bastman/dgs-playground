@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2021 Netflix, Inc.
  *
@@ -35,9 +34,9 @@ import java.util.concurrent.CompletableFuture
  * Example Instrumentation class that prints the time each datafetcher takes.
  */
 @Component
-class ExampleTracingInstrumentation: SimpleInstrumentation() {
+class ExampleTracingInstrumentation : SimpleInstrumentation() {
 
-    val logger : Logger = LoggerFactory.getLogger(ExampleTracingInstrumentation::class.java)
+    val logger: Logger = LoggerFactory.getLogger(ExampleTracingInstrumentation::class.java)
 
     override fun createState(): InstrumentationState {
         return TraceState()
@@ -50,10 +49,13 @@ class ExampleTracingInstrumentation: SimpleInstrumentation() {
         return super.beginExecution(parameters)
     }
 
-    override fun instrumentDataFetcher(dataFetcher: DataFetcher<*>, parameters: InstrumentationFieldFetchParameters): DataFetcher<*> {
+    override fun instrumentDataFetcher(
+        dataFetcher: DataFetcher<*>,
+        parameters: InstrumentationFieldFetchParameters,
+    ): DataFetcher<*> {
 
         // We only care about user code
-        if(parameters.isTrivialDataFetcher || parameters.executionStepInfo.path.toString().startsWith("/__schema")) {
+        if (parameters.isTrivialDataFetcher || parameters.executionStepInfo.path.toString().startsWith("/__schema")) {
             return dataFetcher
         }
 
@@ -62,8 +64,8 @@ class ExampleTracingInstrumentation: SimpleInstrumentation() {
         return DataFetcher { environment ->
             val startTime = System.currentTimeMillis()
             val result = dataFetcher.get(environment)
-            if(result is CompletableFuture<*>) {
-                result.whenComplete { _,_ ->
+            if (result is CompletableFuture<*>) {
+                result.whenComplete { _, _ ->
                     val totalTime = System.currentTimeMillis() - startTime
                     logger.info("Async datafetcher '$dataFetcherName' took ${totalTime}ms")
                 }
@@ -76,7 +78,10 @@ class ExampleTracingInstrumentation: SimpleInstrumentation() {
         }
     }
 
-    override fun instrumentExecutionResult(executionResult: ExecutionResult, parameters: InstrumentationExecutionParameters): CompletableFuture<ExecutionResult> {
+    override fun instrumentExecutionResult(
+        executionResult: ExecutionResult,
+        parameters: InstrumentationExecutionParameters,
+    ): CompletableFuture<ExecutionResult> {
         val state: TraceState = parameters.getInstrumentationState()
         val totalTime = System.currentTimeMillis() - state.traceStartTime
         logger.info("Total execution time: ${totalTime}ms")
@@ -95,5 +100,5 @@ class ExampleTracingInstrumentation: SimpleInstrumentation() {
         return "${parentType.name}.${parameters.executionStepInfo.path.segmentName}"
     }
 
-    data class TraceState(var traceStartTime: Long = 0): InstrumentationState
+    data class TraceState(var traceStartTime: Long = 0) : InstrumentationState
 }

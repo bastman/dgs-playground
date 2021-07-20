@@ -1,5 +1,6 @@
 package com.example.demo.db
 
+import com.example.demo.generated.types.Show
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
@@ -47,4 +48,11 @@ data class ShowsRecord(
     val show_id: UUID,
     val title: String,
     val release_year: Int?,
+)
+
+fun ShowsRecord.toShowDto(): Show = Show(
+    showId = show_id,
+    title = title,
+    releaseYear = release_year,
+    someUUID = null
 )

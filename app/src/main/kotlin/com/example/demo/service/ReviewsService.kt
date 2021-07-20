@@ -1,10 +1,17 @@
 package com.example.demo.service
 
+import com.example.demo.db.ReviewsRecord
+import com.example.demo.db.ReviewsTable
+import com.example.demo.db.toReviewDto
 import com.example.demo.generated.types.AddReviewInput
 import com.example.demo.generated.types.Review
-import org.slf4j.LoggerFactory
+import mu.KLogging
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
+import java.time.Instant
+import java.time.ZoneId
+import java.util.*
 
 /**
  * This service emulates a data store.
@@ -13,9 +20,9 @@ import java.time.OffsetDateTime
  */
 @Service
 class ReviewsService(private val showsService: ShowsService) {
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    companion object : KLogging()
 
-    private val reviews = mutableListOf<Review>()
+    //private val reviews = mutableListOf<Review>()
 
     /**
      * Hopefully nobody calls this for multiple shows within a single query, that would indicate the N+1 problem!
@@ -27,42 +34,51 @@ class ReviewsService(private val showsService: ShowsService) {
 
      */
 
-    fun reviews():List<Review> {
-        val out = reviews.toList()
+    fun reviews(): List<Review> {
+        //val out = reviews.toList()
+        val table = ReviewsTable
+        val records: List<ReviewsRecord> = table.selectAll()
+            .map(table::mapRowToRecord)
+
+        //val out = reviewsService.reviews()
+        val out = records.map { it.toReviewDto() }
         return out
     }
+
 
     /**
      * This is the method we want to call when loading reviews for multiple shows.
      * If this code was backed by a relational database, it would select reviews for all requested shows in a single SQL query.
      */
-    fun reviewsForShows(showIds: List<Int>): List<Review> {
+    fun reviewsForShows(showIds: List<UUID>): List<Review> {
         logger.info("Loading reviews for shows ${showIds.joinToString()}")
 
-        val out:List<Review> = reviews.filter {
-            it.showId in showIds
-        }
+        val table = ReviewsTable
+        val records = table.select {
+            table.show_id inList showIds
+        }.map(table::mapRowToRecord)
+        val dtos = records.map { it.toReviewDto() }
 
-        return out
+        return dtos
     }
 
 
-    fun addReview(reviewInput: AddReviewInput):Review {
-        val review = Review(
-            id = (0..Int.MAX_VALUE).random(),
-            showId= reviewInput.showId,
-            username = reviewInput.username,
-            starScore = reviewInput.starScore,
-            submittedDate = OffsetDateTime.now()
+    fun addReview(input: AddReviewInput): Review {
+        val table = ReviewsTable
+        val recordNew = ReviewsRecord(
+            review_id = UUID.randomUUID(),
+            show_id = input.showId,
+            submitted_at = Instant.now().atZone(ZoneId.of("UTC")).toLocalDateTime(),
+            username = input.username,
+            star_rating = input.starScore,
+            comment = input.comment
         )
+        val recordInserted = table.insertRecord(recordNew)
+        val dto = recordInserted.toReviewDto()
+        logger.info("record added: $recordInserted")
 
-        reviews.add(review)
-
-        logger.info("Review added {}", review)
-
-        return review
+        return dto
     }
-
 
 
 }

@@ -1,8 +1,10 @@
 package com.example.demo.db
 
+import com.example.demo.generated.types.Review
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 
 object ReviewsTable : Table("reviews") {
@@ -31,26 +33,26 @@ object ReviewsTable : Table("reviews") {
         )
 
 
-    fun insertRecord(record:ReviewsRecord):ReviewsRecord {
+    fun insertRecord(record: ReviewsRecord): ReviewsRecord {
         this.insert {
-            it[review_id]=record.review_id
-            it[show_id]=record.show_id
-            it[submitted_at]=record.submitted_at
-            it[username]=record.username
-            it[star_rating]=record.star_rating
-            it[comment]=record.comment
+            it[review_id] = record.review_id
+            it[show_id] = record.show_id
+            it[submitted_at] = record.submitted_at
+            it[username] = record.username
+            it[star_rating] = record.star_rating
+            it[comment] = record.comment
         }
         return this.getRecordById(reviewId = record.review_id)
     }
 
-    fun findRecordById(reviewId:UUID):ReviewsRecord? {
-        return this.select { this@ReviewsTable.review_id eq reviewId}
-            .limit(n=1, offset = 0)
+    fun findRecordById(reviewId: UUID): ReviewsRecord? {
+        return this.select { this@ReviewsTable.review_id eq reviewId }
+            .limit(n = 1, offset = 0)
             .map { mapRowToRecord(it) }
             .firstOrNull()
     }
 
-    fun getRecordById(reviewId:UUID):ReviewsRecord = findRecordById(reviewId=reviewId)
+    fun getRecordById(reviewId: UUID): ReviewsRecord = findRecordById(reviewId = reviewId)
         ?: error("Record not found (table: ${this.tableName} reviewId: $reviewId)")
 
 }
@@ -63,3 +65,14 @@ data class ReviewsRecord(
     val star_rating: Int?,
     val comment: String?,
 )
+
+
+fun ReviewsRecord.toReviewDto(): Review = Review(
+    reviewId = review_id,
+    showId = show_id,
+    username = username,
+    starScore = star_rating,
+    submittedDate = submitted_at.atZone(ZoneId.of("UTC")).toOffsetDateTime(),
+    comment = comment
+)
+
