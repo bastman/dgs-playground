@@ -1,30 +1,26 @@
-package com.example.demo.mutation
+package com.example.demo.domain.show.mutation
 
-import com.example.demo.db.*
-import com.example.demo.generated.DgsConstants
-import com.example.demo.generated.types.AddShowInput
+import com.example.demo.domain.review.ReviewRecord
+import com.example.demo.domain.review.ReviewTable
+import com.example.demo.domain.show.ShowTable
+import com.example.demo.domain.show.ShowsRecord
+import com.example.demo.domain.show.toShowDto
 import com.example.demo.generated.types.Show
-import com.example.demo.service.ReviewsService
-import com.example.demo.service.ShowsService
-import com.netflix.graphql.dgs.DgsComponent
-import com.netflix.graphql.dgs.DgsData
-import com.netflix.graphql.dgs.InputArgument
+import mu.KLogging
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 
-@DgsComponent
-class SampleDataMutation(
-    private val showsService: ShowsService,
-    private val reviewsService: ReviewsService
-) {
+@Component
+class AddSampleShowsMutation() {
+    companion object : KLogging()
 
-    @DgsData(parentType = "Mutation", field = DgsConstants.MUTATION.AddSampleData) // field={{name_of_mutation}}
     @Transactional(readOnly = false)
-    fun addSampleData(): List<Show> {
-        val showTable = ShowsTable
+    fun handle(): List<Show> {
+        val showTable = ShowTable
         val showRecords = (0..3).map {
             ShowsRecord(
                 show_id = UUID.randomUUID(),
@@ -33,20 +29,20 @@ class SampleDataMutation(
             ).let(showTable::insertRecord)
         }
 
-        showRecords.forEach { showRecord->
-            val showId=showRecord.show_id
+        showRecords.forEach { showRecord ->
+            val showId = showRecord.show_id
 
             (1..4).forEach {
-                ReviewsRecord(
+                ReviewRecord(
                     review_id = UUID.randomUUID(),
-                    submitted_at = (Instant.now()-Duration.ofSeconds((0L..100_000L).random()))
+                    submitted_at = (Instant.now() - Duration.ofSeconds((0L..100_000L).random()))
                         .atZone(ZoneId.of("UTC"))
                         .toLocalDateTime(),
                     show_id = showId,
                     username = "username-${UUID.randomUUID()}",
                     comment = "comment-${UUID.randomUUID()}",
                     star_rating = (0..5).random()
-                ).let(ReviewsTable::insertRecord)
+                ).let(ReviewTable::insertRecord)
             }
 
         }
@@ -55,4 +51,5 @@ class SampleDataMutation(
 
         return dtos
     }
+
 }

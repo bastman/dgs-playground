@@ -1,4 +1,4 @@
-package com.example.demo.db
+package com.example.demo.domain.show
 
 import com.example.demo.generated.types.Show
 import org.jetbrains.exposed.sql.ResultRow
@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import java.util.*
 
-object ShowsTable : Table("shows") {
+object ShowTable : Table("show") {
 
     val show_id = uuid("show_id")
     override val primaryKey: PrimaryKey = PrimaryKey(show_id, name = "xxx_pkey")
@@ -25,7 +25,7 @@ object ShowsTable : Table("shows") {
     }
 
     fun findRecordById(showId: UUID): ShowsRecord? {
-        return this.select { this@ShowsTable.show_id eq showId }
+        return this.select { show_id eq showId }
             .limit(n = 1, offset = 0)
             .map { mapRowToRecord(it) }
             .firstOrNull()

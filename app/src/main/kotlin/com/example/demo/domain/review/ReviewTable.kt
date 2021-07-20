@@ -1,5 +1,6 @@
-package com.example.demo.db
+package com.example.demo.domain.review
 
+import com.example.demo.domain.show.ShowTable
 import com.example.demo.generated.types.Review
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.datetime
@@ -7,12 +8,12 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
-object ReviewsTable : Table("reviews") {
+object ReviewTable : Table("review") {
     val review_id: Column<UUID> = uuid("review_id")
     override val primaryKey: PrimaryKey = PrimaryKey(review_id, name = "xxx_pkey")
 
     val show_id: Column<UUID> = uuid("show_id")
-        .references(ShowsTable.show_id)
+        .references(ShowTable.show_id)
 
     val submitted_at: Column<LocalDateTime> = datetime("submitted_at")
 
@@ -22,8 +23,8 @@ object ReviewsTable : Table("reviews") {
     val comment: Column<String?> = varchar("comment", 1024)
         .nullable()
 
-    fun mapRowToRecord(row: ResultRow): ReviewsRecord =
-        ReviewsRecord(
+    fun mapRowToRecord(row: ResultRow): ReviewRecord =
+        ReviewRecord(
             review_id = row[review_id],
             show_id = row[show_id],
             submitted_at = row[submitted_at],
@@ -33,7 +34,7 @@ object ReviewsTable : Table("reviews") {
         )
 
 
-    fun insertRecord(record: ReviewsRecord): ReviewsRecord {
+    fun insertRecord(record: ReviewRecord): ReviewRecord {
         this.insert {
             it[review_id] = record.review_id
             it[show_id] = record.show_id
@@ -42,22 +43,22 @@ object ReviewsTable : Table("reviews") {
             it[star_rating] = record.star_rating
             it[comment] = record.comment
         }
-        return this.getRecordById(reviewId = record.review_id)
+        return getRecordById(reviewId = record.review_id)
     }
 
-    fun findRecordById(reviewId: UUID): ReviewsRecord? {
-        return this.select { this@ReviewsTable.review_id eq reviewId }
+    fun findRecordById(reviewId: UUID): ReviewRecord? {
+        return this.select { review_id eq reviewId }
             .limit(n = 1, offset = 0)
             .map { mapRowToRecord(it) }
             .firstOrNull()
     }
 
-    fun getRecordById(reviewId: UUID): ReviewsRecord = findRecordById(reviewId = reviewId)
+    fun getRecordById(reviewId: UUID): ReviewRecord = findRecordById(reviewId = reviewId)
         ?: error("Record not found (table: ${this.tableName} reviewId: $reviewId)")
 
 }
 
-data class ReviewsRecord(
+data class ReviewRecord(
     val review_id: UUID,
     val show_id: UUID,
     val submitted_at: LocalDateTime,
@@ -67,7 +68,7 @@ data class ReviewsRecord(
 )
 
 
-fun ReviewsRecord.toReviewDto(): Review = Review(
+fun ReviewRecord.toReviewDto(): Review = Review(
     reviewId = review_id,
     showId = show_id,
     username = username,

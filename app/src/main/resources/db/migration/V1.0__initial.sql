@@ -1,4 +1,4 @@
-CREATE TABLE "public"."shows"
+CREATE TABLE "public"."show"
 (
     "show_id"      uuid,
     "title"        text NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE "public"."shows"
 );
 
 
-CREATE TABLE "public"."reviews"
+CREATE TABLE "public"."review"
 (
     "review_id"    uuid,
     "show_id"      uuid         NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE "public"."reviews"
     "star_rating"  int,
     "comment"      varchar(1024),
     PRIMARY KEY ("review_id"),
-    FOREIGN KEY ("show_id") REFERENCES "public"."shows" ("show_id")
+    FOREIGN KEY ("show_id") REFERENCES "public"."show" ("show_id")
 );
 
 

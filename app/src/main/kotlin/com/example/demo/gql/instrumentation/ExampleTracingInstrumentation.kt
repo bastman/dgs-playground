@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.demo.instrumentation
+package com.example.demo.gql.instrumentation
 
 import graphql.ExecutionResult
 import graphql.execution.instrumentation.InstrumentationContext
@@ -26,8 +26,6 @@ import graphql.schema.DataFetcher
 import graphql.schema.GraphQLNonNull
 import graphql.schema.GraphQLObjectType
 import mu.KLogging
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
 
@@ -36,7 +34,7 @@ import java.util.concurrent.CompletableFuture
  */
 @Component
 class ExampleTracingInstrumentation : SimpleInstrumentation() {
-    companion object:KLogging()
+    companion object : KLogging()
 
     override fun createState(): InstrumentationState {
         return TraceState()

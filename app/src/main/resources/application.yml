@@ -6,5 +6,8 @@ spring:
 
 logging:
   level:
+    web: DEBUG
     org.springframework.web.servlet: INFO
+    org.springframework.jdbc: DEBUG
     Exposed: INFO
+

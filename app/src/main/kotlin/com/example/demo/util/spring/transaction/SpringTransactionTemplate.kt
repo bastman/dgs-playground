@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.TransactionTemplate
 
 class SpringTransactionTemplate(
-    private val delegate: TransactionTemplate
+    private val delegate: TransactionTemplate,
 ) {
     companion object
 
@@ -27,7 +27,7 @@ class SpringTransactionTemplateBuilder(
     var timeout: Int = TIMEOUT_DEFAULT,
     var propagation: Int = TransactionDefinition.PROPAGATION_REQUIRED,
     var isReadOnly: Boolean = false,
-    var isolationLevel: Int = TransactionDefinition.ISOLATION_DEFAULT
+    var isolationLevel: Int = TransactionDefinition.ISOLATION_DEFAULT,
 ) {
     companion object
 
@@ -76,11 +76,11 @@ class SpringTransactionTemplateBuilder(
 }
 
 operator fun SpringTransactionTemplate.Companion.invoke(
-    transactionManager: PlatformTransactionManager, init: SpringTransactionTemplateBuilder.() -> Unit = {}
+    transactionManager: PlatformTransactionManager, init: SpringTransactionTemplateBuilder.() -> Unit = {},
 ): SpringTransactionTemplate = springTransactionTemplate(transactionManager, init)
 
 fun springTransactionTemplate(
-    transactionManager: PlatformTransactionManager, init: SpringTransactionTemplateBuilder.() -> Unit = {}
+    transactionManager: PlatformTransactionManager, init: SpringTransactionTemplateBuilder.() -> Unit = {},
 ): SpringTransactionTemplate = SpringTransactionTemplateBuilder(transactionManager)
     .apply(init)
     .build()

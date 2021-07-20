@@ -21,9 +21,9 @@ type Review {
 }
 
 type Mutation {
-    addSampleData: [Show]!
-    addShow(show: AddShowInput): Show!
-    addReview(review: AddReviewInput): Review!
+    addSampleShows: [Show]!
+    addShow(input: AddShowInput): Show!
+    addReview(input: AddReviewInput): Review!
 }
 
 input AddShowInput {

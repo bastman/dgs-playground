@@ -1,4 +1,4 @@
-package com.example.demo.scalars
+package com.example.demo.gql.scalars
 
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsRuntimeWiring
