@@ -58,7 +58,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     // db: exposed sql client
-    val exposedVersion = "0.31.1" // "0.31.1"
+    val exposedVersion = "0.32.1" // "0.31.1"
     // note: exposed 0.32.1 changed behaviour of spring transaction
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")

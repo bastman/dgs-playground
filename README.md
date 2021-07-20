@@ -4,11 +4,15 @@ see:
 - https://github.com/Netflix/dgs-examples-java
 - https://github.com/Netflix/dgs-examples-kotlin
 - https://piotrminkowski.com/2021/04/08/an-advanced-graphql-with-spring-boot-and-netflix-dgs/
-  
+- https://github.com/hantsy/spring-graphql-sample  
 
 
 
 http://localhost:8080/graphiql
+
+## findings
+
+- transaction management is weird: it creates a new transaction for each query instead of joining the current transaction
 
 ```
 

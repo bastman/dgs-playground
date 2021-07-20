@@ -3,3 +3,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/app
     username: app_rw
     password: app_rw
+
+logging:
+  level:
+    org.springframework.web.servlet: INFO
+    Exposed: INFO

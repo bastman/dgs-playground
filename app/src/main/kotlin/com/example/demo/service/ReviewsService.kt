@@ -8,7 +8,10 @@ import com.example.demo.generated.types.Review
 import mu.KLogging
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
@@ -19,6 +22,7 @@ import java.util.*
  * If this was indeed backed by a database, it would be very important to avoid the N+1 problem, which means we need to use a DataLoader to call this class.
  */
 @Service
+
 class ReviewsService(private val showsService: ShowsService) {
     companion object : KLogging()
 
@@ -33,8 +37,10 @@ class ReviewsService(private val showsService: ShowsService) {
     }
 
      */
-
-    fun reviews(): List<Review> {
+    @Transactional(readOnly = true)
+    fun allReviews(): List<Review> {
+        logger.info("Loading all reviews")
+        logger.info { "thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
         //val out = reviews.toList()
         val table = ReviewsTable
         val records: List<ReviewsRecord> = table.selectAll()
@@ -50,8 +56,10 @@ class ReviewsService(private val showsService: ShowsService) {
      * This is the method we want to call when loading reviews for multiple shows.
      * If this code was backed by a relational database, it would select reviews for all requested shows in a single SQL query.
      */
+    @Transactional(readOnly = true) // works
     fun reviewsForShows(showIds: List<UUID>): List<Review> {
         logger.info("Loading reviews for shows ${showIds.joinToString()}")
+        logger.info { "thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
         val table = ReviewsTable
         val records = table.select {
