@@ -13,6 +13,7 @@ http://localhost:8080/graphiql
 ## findings
 
 - transaction management is weird: it creates a new transaction for each query instead of joining the current transaction
+- mutation with returning nested results leads to n+1
 
 ## runbook
 

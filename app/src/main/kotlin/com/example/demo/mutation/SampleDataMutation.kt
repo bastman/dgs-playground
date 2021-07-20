@@ -33,18 +33,22 @@ class SampleDataMutation(
             ).let(showTable::insertRecord)
         }
 
-        val reviewRecords = showRecords.map {
-            val showId=it.show_id
-            ReviewsRecord(
-                review_id = UUID.randomUUID(),
-                submitted_at = (Instant.now()-Duration.ofSeconds((0L..100_000L).random()))
-                    .atZone(ZoneId.of("UTC"))
-                    .toLocalDateTime(),
-                show_id = showId,
-                username = "username-${UUID.randomUUID()}",
-                comment = "comment-${UUID.randomUUID()}",
-                star_rating = (0..5).random()
-            ).let(ReviewsTable::insertRecord)
+        showRecords.forEach { showRecord->
+            val showId=showRecord.show_id
+
+            (1..4).forEach {
+                ReviewsRecord(
+                    review_id = UUID.randomUUID(),
+                    submitted_at = (Instant.now()-Duration.ofSeconds((0L..100_000L).random()))
+                        .atZone(ZoneId.of("UTC"))
+                        .toLocalDateTime(),
+                    show_id = showId,
+                    username = "username-${UUID.randomUUID()}",
+                    comment = "comment-${UUID.randomUUID()}",
+                    star_rating = (0..5).random()
+                ).let(ReviewsTable::insertRecord)
+            }
+
         }
 
         val dtos = showRecords.map { it.toShowDto() }
