@@ -15,7 +15,7 @@ object ShowTable : Table("show") {
     val title = text("title")
     val release_year = integer("release_year").nullable()
 
-    fun insertRecord(record: ShowsRecord): ShowsRecord {
+    fun insertRecord(record: ShowRecord): ShowRecord {
         this.insert {
             it[show_id] = record.show_id
             it[title] = record.title
@@ -24,19 +24,19 @@ object ShowTable : Table("show") {
         return getRecordById(showId = record.show_id)
     }
 
-    fun findRecordById(showId: UUID): ShowsRecord? {
+    fun findRecordById(showId: UUID): ShowRecord? {
         return this.select { show_id eq showId }
             .limit(n = 1, offset = 0)
             .map { mapRowToRecord(it) }
             .firstOrNull()
     }
 
-    fun getRecordById(showId: UUID): ShowsRecord = findRecordById(showId = showId)
+    fun getRecordById(showId: UUID): ShowRecord = findRecordById(showId = showId)
         ?: error("Record not found (table: ${this.tableName} showId: $showId)")
 
 
-    fun mapRowToRecord(row: ResultRow): ShowsRecord =
-        ShowsRecord(
+    fun mapRowToRecord(row: ResultRow): ShowRecord =
+        ShowRecord(
             show_id = row[show_id],
             title = row[title],
             release_year = row[release_year],
@@ -44,13 +44,13 @@ object ShowTable : Table("show") {
 
 }
 
-data class ShowsRecord(
+data class ShowRecord(
     val show_id: UUID,
     val title: String,
     val release_year: Int?,
 )
 
-fun ShowsRecord.toShowDto(): Show = Show(
+fun ShowRecord.toShowDto(): Show = Show(
     showId = show_id,
     title = title,
     releaseYear = release_year,

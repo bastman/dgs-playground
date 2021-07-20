@@ -1,7 +1,7 @@
 package com.example.demo.domain.show.mutation
 
 import com.example.demo.domain.show.ShowTable
-import com.example.demo.domain.show.ShowsRecord
+import com.example.demo.domain.show.ShowRecord
 import com.example.demo.domain.show.toShowDto
 import com.example.demo.generated.types.AddShowInput
 import com.example.demo.generated.types.Show
@@ -21,7 +21,7 @@ class AddShowMutation {
         logger.info { "addShow START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
 
         val table = ShowTable
-        val recordNew = ShowsRecord(
+        val recordNew = ShowRecord(
             show_id = UUID.randomUUID(),
             title = input.title,
             release_year = input.releaseYear

@@ -2,8 +2,9 @@ package com.example.demo.domain.show.mutation
 
 import com.example.demo.domain.review.ReviewRecord
 import com.example.demo.domain.review.ReviewTable
+import com.example.demo.domain.review.toReviewDto
 import com.example.demo.domain.show.ShowTable
-import com.example.demo.domain.show.ShowsRecord
+import com.example.demo.domain.show.ShowRecord
 import com.example.demo.domain.show.toShowDto
 import com.example.demo.generated.types.Show
 import mu.KLogging
@@ -22,17 +23,17 @@ class AddSampleShowsMutation() {
     fun handle(): List<Show> {
         val showTable = ShowTable
         val showRecords = (0..3).map {
-            ShowsRecord(
+            ShowRecord(
                 show_id = UUID.randomUUID(),
                 title = "title-${UUID.randomUUID()}",
                 release_year = (1900..2021).random()
             ).let(showTable::insertRecord)
         }
 
-        showRecords.forEach { showRecord ->
+        val fromDb = showRecords.map { showRecord ->
             val showId = showRecord.show_id
 
-            (1..4).forEach {
+            val reviewRecords = (1..4).map {
                 ReviewRecord(
                     review_id = UUID.randomUUID(),
                     submitted_at = (Instant.now() - Duration.ofSeconds((0L..100_000L).random()))
@@ -44,10 +45,16 @@ class AddSampleShowsMutation() {
                     star_rating = (0..5).random()
                 ).let(ReviewTable::insertRecord)
             }
-
+            Pair(showRecord, reviewRecords)
         }
 
-        val dtos = showRecords.map { it.toShowDto() }
+        val dtos = fromDb.map {
+            val showRecord = it.first
+            val reviewRecords = it.second
+            val reviewDtos = reviewRecords.map { it.toReviewDto() }
+            showRecord.toShowDto()
+                .copy(reviews = reviewDtos)
+        }
 
         return dtos
     }
