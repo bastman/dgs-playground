@@ -40,8 +40,8 @@ class UUIDScalar : Coercing<UUID, String> {
     @Throws(CoercingParseLiteralException::class)
     override fun parseLiteral(input: Any): UUID {
         if (input is StringValue) {
-            val a = (input as StringValue).getValue()
-            return UUID.fromString(a)
+            val txt:String = input.value?: throw CoercingParseLiteralException("Value is NULL and is not a valid uuid")
+            return UUID.fromString(txt)
         }
         throw CoercingParseLiteralException("Value is not a valid uuid")
     }

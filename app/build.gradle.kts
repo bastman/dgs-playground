@@ -43,17 +43,26 @@ dependencies {
     // logging
     implementation("io.github.microutils:kotlin-logging:1.7.+")
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    // spring
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude(group="org.springframework.boot", module="spring-boot-starter-tomcat")
+    }
+    implementation("org.springframework.boot:spring-boot-starter-undertow")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     //implementation("com.github.javafaker:javafaker:1.+")
 
     // dgs
     implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"))
-    implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
+    implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter") {
+        exclude(group="org.springframework.boot", module="spring-boot-starter-tomcat")
+    }
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
 
     // db
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
 
@@ -64,6 +73,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
     implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
+
+    // metrics
+    // https://www.tutorialworks.com/spring-boot-prometheus-micrometer/
+    // http://localhost:8080/actuator/prometheus
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

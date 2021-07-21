@@ -11,3 +11,8 @@ logging:
     org.springframework.jdbc: DEBUG
     Exposed: INFO
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
