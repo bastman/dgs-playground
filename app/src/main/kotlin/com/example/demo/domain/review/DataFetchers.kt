@@ -29,7 +29,7 @@ class ReviewDataFetcher {
     // Show.reviews  (async)
     @DgsData(parentType = DgsConstants.SHOW.TYPE_NAME, field = DgsConstants.SHOW.Reviews)
     fun reviewsByShow(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Review>>? {
-        logger.info { "reviewsByShow START ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+      //  logger.info { "reviewsByShow START ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
         //Instead of loading a DataLoader by name, we can use the DgsDataFetchingEnvironment and pass in the DataLoader classname.
         val reviewsDataLoader = dfe.getDataLoader<UUID, List<Review>>(
@@ -46,7 +46,7 @@ class ReviewDataFetcher {
         val out =
             reviewsDataLoader.load(show.showId)
 
-        logger.info { "reviewsByShow END ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+      //  logger.info { "reviewsByShow END ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
         return out
     }

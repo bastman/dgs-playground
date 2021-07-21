@@ -27,24 +27,25 @@ class ReviewsByShowIdsDataLoader(private val reviewsByShowIds: ReviewsByShowIds)
     companion object : KLogging()
 
     override fun load(keys: Set<UUID>, environment: BatchLoaderEnvironment): CompletionStage<Map<UUID, List<Review>>> {
-        logger.info { "START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+       // logger.info { "START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
-        val out = executeBlockingAsync(GqlThreadPools.IO) {
-            logger.info { "executeBlockingAsync - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+        val out = executeBlockingAsync() {
+           // logger.info { "executeBlockingAsync - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
             // blocking call to db
             reviewsByShowIds.handle(showIds = keys.toList())
                 .groupBy { it.showId }
         }
-        logger.info { "END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+       // logger.info { "END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
         return out
     }
 
     // Note: the common forkjoin pool is used by default.
     // TBD: let's use a dedicated pool for blocking calls to our db
     // https://www.graphql-java.com/blog/threads/
-    private fun <T>executeBlockingAsync(executorService: ExecutorService, block:()->T):CompletableFuture<T> {
-        return CompletableFuture.supplyAsync( block, executorService)
+    private fun <T>executeBlockingAsync(block:()->T):CompletableFuture<T> {
+        //return CompletableFuture.supplyAsync( block,GqlThreadPools.IO)
+        return CompletableFuture.supplyAsync( block)
     }
 
 }
@@ -61,9 +62,8 @@ class ReviewsByShowIds {
     @Transactional(readOnly = true)
     fun handle(showIds: List<UUID>): List<Review> {
 
-        logger.info("reviewsForShows - Loading reviews for shows ${showIds.joinToString()}")
-
-        logger.info { "reviewsForShows START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
+       // logger.info("reviewsForShows - Loading reviews for shows ${showIds.joinToString()}")
+       // logger.info { "reviewsForShows START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
 
         val table = ReviewTable
 
@@ -72,7 +72,7 @@ class ReviewsByShowIds {
         }.map(table::mapRowToRecord)
 
 
-        logger.info { "reviewsForShows END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
+       // logger.info { "reviewsForShows END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
 
         val dtos = records.map { it.toReviewDto() }
 

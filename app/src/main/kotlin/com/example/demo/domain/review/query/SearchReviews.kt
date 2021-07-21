@@ -17,8 +17,8 @@ class SearchReviews {
 
     @Transactional(readOnly = true)
     fun handle(): List<Review> {
-        logger.info("Loading all reviews")
-        logger.info { "thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
+        //logger.info("Loading all reviews")
+        //logger.info { "thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
         val table = ReviewTable
         val records: List<ReviewRecord> = table.selectAll()
             .map(table::mapRowToRecord)

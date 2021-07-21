@@ -6,10 +6,11 @@ spring:
 
 logging:
   level:
-    web: DEBUG
+    web: INFO
     org.springframework.web.servlet: INFO
-    org.springframework.jdbc: DEBUG
+    org.springframework.jdbc: INFO
     Exposed: INFO
+    com.example.demo: WARN
 
 management:
   endpoints:

@@ -19,7 +19,7 @@ class SearchShowsQuery {
     @Transactional(readOnly = true)
     fun handle(titleFilter: String?): List<Show> {
         val table = ShowTable
-        logger.info { "thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
+     //   logger.info { "thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
 
         val records = table.select {
             when (titleFilter) {

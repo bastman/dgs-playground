@@ -32,6 +32,8 @@ import java.util.concurrent.CompletableFuture
 /**
  * Example Instrumentation class that prints the time each datafetcher takes.
  */
+
+/*
 @Component
 class ExampleTracingInstrumentation : SimpleInstrumentation() {
     companion object : KLogging()
@@ -100,3 +102,6 @@ class ExampleTracingInstrumentation : SimpleInstrumentation() {
 
     data class TraceState(var traceStartTime: Long = 0) : InstrumentationState
 }
+
+
+ */
