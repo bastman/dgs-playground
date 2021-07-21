@@ -76,12 +76,30 @@ class ReviewsByShowIds {
 
         val table = ReviewTable
 
+        val sl = table
+            .slice(table.review_id)
+            .select {
+                table.show_id inList showIds
+            }.map {
+                //it[table.review_id]
+                "foo"
+            }
+        logger.info { "ReviewsByShowIds.handle(): ID's only duration (ms): ${startedAt.durationToNowInMillis()} items.count: ${sl.size}" }
+
+
+        val x = table.select {
+            table.show_id inList showIds
+        }.count()
+        logger.info { "ReviewsByShowIds.handle(): COUNT duration (ms): ${startedAt.durationToNowInMillis()} count: ${x}" }
+
 
         val records = table.select {
             table.show_id inList showIds
-        }.map(table::mapRowToRecord)
-            .also {
-                   }
+        }
+
+            .map(table::mapRowToRecord)
+        logger.info { "ReviewsByShowIds.handle(): records duration (ms): ${startedAt.durationToNowInMillis()} items.count: ${records.size}" }
+
 
 
        // logger.info { "reviewsForShows END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
@@ -89,7 +107,7 @@ class ReviewsByShowIds {
         val dtos = records.map { it.toReviewDto() }
 
         return dtos.also {
-            logger.info { "ReviewsByShowIds.handle(): duration (ms): ${startedAt.durationToNowInMillis()} items.count: ${it.size}" }
+            logger.info { "ReviewsByShowIds.handle(): END dtos duration (ms): ${startedAt.durationToNowInMillis()} items.count: ${it.size}" }
 
         }
     }
