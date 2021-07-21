@@ -32,6 +32,7 @@ class ReviewsByShowIdsDataLoader(private val reviewsByShowIds: ReviewsByShowIds)
        // logger.info { "START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
         val startedAt = Instant.now()
+
         val out = executeBlockingAsync() {
            // logger.info { "executeBlockingAsync - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
@@ -52,8 +53,8 @@ class ReviewsByShowIdsDataLoader(private val reviewsByShowIds: ReviewsByShowIds)
     // TBD: let's use a dedicated pool for blocking calls to our db
     // https://www.graphql-java.com/blog/threads/
     private fun <T>executeBlockingAsync(block:()->T):CompletableFuture<T> {
-        //return CompletableFuture.supplyAsync( block,GqlThreadPools.IO)
-        return CompletableFuture.supplyAsync( block)
+        return CompletableFuture.supplyAsync( block,GqlThreadPools.IO)
+        //return CompletableFuture.supplyAsync( block)
     }
 
 }
@@ -69,22 +70,28 @@ class ReviewsByShowIds {
      */
     @Transactional(readOnly = true)
     fun handle(showIds: List<UUID>): List<Review> {
-
+        val startedAt=Instant.now()
        // logger.info("reviewsForShows - Loading reviews for shows ${showIds.joinToString()}")
        // logger.info { "reviewsForShows START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
 
         val table = ReviewTable
 
+
         val records = table.select {
             table.show_id inList showIds
         }.map(table::mapRowToRecord)
+            .also {
+                   }
 
 
        // logger.info { "reviewsForShows END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
 
         val dtos = records.map { it.toReviewDto() }
 
-        return dtos
+        return dtos.also {
+            logger.info { "ReviewsByShowIds.handle(): duration (ms): ${startedAt.durationToNowInMillis()} items.count: ${it.size}" }
+
+        }
     }
 
 }

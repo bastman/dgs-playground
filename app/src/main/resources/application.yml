@@ -3,13 +3,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/app
     username: app_rw
     password: app_rw
+    hikari.maximumPoolSize: 75
 
 logging:
   level:
     web: INFO
     org.springframework.web.servlet: INFO
     org.springframework.jdbc: INFO
-    Exposed: INFO
+    Exposed: DEBUG
+    com.zaxxer.hikari: DEBUG
     com.example.demo: INFO
 
 management:

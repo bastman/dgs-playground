@@ -11,6 +11,11 @@ services:
       - type: bind
         source: ./docker-entrypoint-initdb.d/
         target: /docker-entrypoint-initdb.d/
+
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+      - /var/lib/postgresql/data
 networks:
   dgs-playground-network: {}
 volumes:
