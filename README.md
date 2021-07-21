@@ -5,8 +5,8 @@ see:
 - https://github.com/Netflix/dgs-examples-kotlin
 - https://piotrminkowski.com/2021/04/08/an-advanced-graphql-with-spring-boot-and-netflix-dgs/
 - https://github.com/hantsy/spring-graphql-sample  
-
-
+- https://www.graphql-java.com/blog/threads/
+- https://netflix.github.io/dgs/advanced/instrumentation/#graphql-query-complexity
 
 http://localhost:8080/graphiql
 
