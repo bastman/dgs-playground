@@ -1,19 +1,18 @@
 type Query {
-    shows(titleFilter: String): [Show]
-    reviews:[Review]
+    shows(titleFilter: String): [Show!]
+    reviews:[Review!]
 }
 
 type Show {
-    showId: UUID!
+    showId: ID!
     title: String!
     releaseYear: Int
-    someUUID: UUID
-    reviews: [Review]
+    reviews: [Review!]
 }
 
 type Review {
-    reviewId: UUID!
-    showId: UUID!
+    reviewId: ID!
+    showId: ID!
     username: String!
     starScore: Int
     submittedDate: DateTime!
@@ -21,7 +20,7 @@ type Review {
 }
 
 type Mutation {
-    addSampleShows: [Show]!
+    addSampleShows: [Show!]!
     addShow(input: AddShowInput): Show!
     addReview(input: AddReviewInput): Review!
 }
@@ -29,15 +28,14 @@ type Mutation {
 input AddShowInput {
     title: String!
     releaseYear: Int
-    someUUID: UUID
 }
 
 input AddReviewInput {
-    showId: UUID!
+    showId: ID!
     username: String!
     starScore: Int!
     comment: String
 }
 
 scalar DateTime
-scalar UUID
+#scalar UUID

@@ -28,7 +28,6 @@ class ReviewDataFetcher {
 
     // Show.reviews  (async)
     @DgsData(parentType = DgsConstants.SHOW.TYPE_NAME, field = DgsConstants.SHOW.Reviews)
-    // @Transactional(readOnly = false)
     fun reviewsByShow(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Review>>? {
         logger.info { "reviewsByShow START ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
@@ -38,6 +37,10 @@ class ReviewDataFetcher {
 
         //Because the reviews field is on Show, the getSource() method will return the Show instance.
         val show = dfe.getSource<Show>()
+
+        if(show.reviews !=null) {
+            return CompletableFuture.supplyAsync { show.reviews }
+        }
 
         //Load the reviews from the DataLoader. This call is async and will be batched by the DataLoader mechanism.
         val out =

@@ -1,0 +1,31 @@
+mutation {
+    addSampleShows {
+        __typename
+        showId
+        title
+        releaseYear
+        reviews {
+            __typename
+            reviewId
+            starScore
+            comment
+            submittedDate
+        }
+    }
+
+    addShow(input: {title:"foo", releaseYear:1983}) {
+        __typename
+        showId
+        title
+        releaseYear
+    }
+
+    addReview(input: {showId:"e10337fb-d5c7-4ddf-b706-98ccf57fc576", username:"theuser", starScore:3, comment:"nice one"}) {
+        __typename
+        reviewId
+        starScore
+        comment
+        submittedDate
+    }
+
+}

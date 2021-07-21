@@ -12,8 +12,8 @@ http://localhost:8080/graphiql
 
 ## findings
 
-- transaction management is weird: it creates a new transaction for each query instead of joining the current transaction
-- mutation with returning nested results leads to n+1
+- transaction management: it creates a new transaction for each query instead of joining the current transaction
+
 
 ## runbook
 
@@ -24,56 +24,10 @@ $ make db-local.up
 ```
 
 
-### example queries
-```
+### example queries + mutations
 
-{
-  
-  shows(titleFilter:"zark") {
-    id
-    title
-    releaseYear
-    __typename
-  
-    reviews {
-      id
-      showId
-      username
-      starScore
-    }
-  }
-}
+- [example.query.graphqls](app/src/main/resources/example.query.graphqls)
+- [example.mutation.graphqls](app/src/main/resources/example.mutation.graphqls)
 
-
-{
-  reviews {
-    id
-    showId
-    username,
-    starScore
-  }
-}
-
-```
-
-```
-
-mutation {
-  addShow( show: {title:"foo", releaseYear: 1989}) {
-    id
-    title
-    releaseYear
-  }
-}
-
-mutation {
-  addReview( review: {showId:2, username:"some user", starScore:3}) {
-    id
-    showId
-    username
-    starScore
-  }
-}
-```
 
 

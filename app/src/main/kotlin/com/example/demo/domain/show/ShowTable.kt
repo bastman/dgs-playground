@@ -53,6 +53,5 @@ data class ShowRecord(
 fun ShowRecord.toShowDto(): Show = Show(
     showId = show_id,
     title = title,
-    releaseYear = release_year,
-    someUUID = null
+    releaseYear = release_year
 )

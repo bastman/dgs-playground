@@ -1,0 +1,27 @@
+
+query {
+    shows(titleFilter:"foo") {
+        __typename
+        showId
+        title
+        releaseYear
+        reviews {
+            __typename
+            reviewId
+            starScore
+            comment
+            submittedDate
+        }
+    }
+
+    reviews {
+        __typename
+        reviewId
+        showId
+        username
+        starScore
+        comment
+        submittedDate
+    }
+}
+
