@@ -10,7 +10,7 @@ logging:
     org.springframework.web.servlet: INFO
     org.springframework.jdbc: INFO
     Exposed: INFO
-    com.example.demo: WARN
+    com.example.demo: INFO
 
 management:
   endpoints:

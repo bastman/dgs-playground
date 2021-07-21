@@ -4,11 +4,13 @@ import com.example.demo.domain.review.dataloader.ReviewsByShowIdsDataLoader
 import com.example.demo.generated.DgsConstants
 import com.example.demo.generated.types.Review
 import com.example.demo.generated.types.Show
+import com.example.demo.util.time.durationToNowInMillis
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import mu.KLogging
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -29,6 +31,7 @@ class ReviewDataFetcher {
     // Show.reviews  (async)
     @DgsData(parentType = DgsConstants.SHOW.TYPE_NAME, field = DgsConstants.SHOW.Reviews)
     fun reviewsByShow(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Review>>? {
+        val startedAt = Instant.now()
       //  logger.info { "reviewsByShow START ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
         //Instead of loading a DataLoader by name, we can use the DgsDataFetchingEnvironment and pass in the DataLoader classname.
@@ -43,10 +46,9 @@ class ReviewDataFetcher {
         }
 
         //Load the reviews from the DataLoader. This call is async and will be batched by the DataLoader mechanism.
-        val out =
-            reviewsDataLoader.load(show.showId)
+        val out = reviewsDataLoader.load(show.showId)
 
-      //  logger.info { "reviewsByShow END ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+        //  logger.info { "reviewsByShow END ASYNC - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
         return out
     }

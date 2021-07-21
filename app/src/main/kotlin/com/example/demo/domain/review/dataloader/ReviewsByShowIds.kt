@@ -4,6 +4,7 @@ import com.example.demo.config.threadpools.GqlThreadPools
 import com.example.demo.domain.review.ReviewTable
 import com.example.demo.domain.review.toReviewDto
 import com.example.demo.generated.types.Review
+import com.example.demo.util.time.durationToNowInMillis
 import com.netflix.graphql.dgs.DgsDataLoader
 import mu.KLogging
 import org.dataloader.BatchLoaderEnvironment
@@ -13,6 +14,7 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
@@ -29,12 +31,18 @@ class ReviewsByShowIdsDataLoader(private val reviewsByShowIds: ReviewsByShowIds)
     override fun load(keys: Set<UUID>, environment: BatchLoaderEnvironment): CompletionStage<Map<UUID, List<Review>>> {
        // logger.info { "START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
+        val startedAt = Instant.now()
         val out = executeBlockingAsync() {
            // logger.info { "executeBlockingAsync - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
             // blocking call to db
-            reviewsByShowIds.handle(showIds = keys.toList())
+            val out = reviewsByShowIds.handle(showIds = keys.toList())
+                .also {
+                    logger.info { "DgsDataLoader 'reviewsByShowIds' duration (ms): ${startedAt.durationToNowInMillis()} items.count: ${it.size}" }
+                }
                 .groupBy { it.showId }
+             //
+            out
         }
        // logger.info { "END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
         return out

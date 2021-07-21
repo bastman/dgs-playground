@@ -13,7 +13,7 @@ http://localhost:8080/graphiql
 ## findings
 
 - transaction management: it creates a new transaction for each query instead of joining the current transaction
-- queries are slow (e.g.: p95 386ms)
+- queries are slow (e.g.: p95 386ms at concurrency>10)
 - dataloaders execute code as async futures in common fork join pool.
   you may want to execute blocking calls to db within a dedicated "IO" thread pool instead
   see: https://www.graphql-java.com/blog/threads/
