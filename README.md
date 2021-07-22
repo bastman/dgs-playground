@@ -48,3 +48,26 @@ file: my_data.json
 ```
 {"query":"query {\n  \n      shows(titleFilter:\"foo\") {\n        __typename\n        showId\n        title\n        releaseYear\n        reviews {\n            __typename\n            reviewId\n            starScore\n            comment\n            submittedDate\n        }\n    }\n  \n}\n\n\n","variables":null}
 ```
+
+
+## some bench results
+
+````
+scenario: load all shows and their reviews
+
+datasource: (reviews: 460 records, shows: 116 records)
+
+api requests: $ ab -n 1000, -c 30
+
+metrics
+
+- gql 2 db queries, 2 db transactions: 1600 ms (p95)
+- rest 1 db query, 1 db transaction: 700 ms (p95)
+- rest 2 db queries, 1 db transaction: 800 ms
+- rest 2 db queries, 2 db transactions: 950 ms
+
+conclusion
+
+the rest api is way faster under load
+
+````
