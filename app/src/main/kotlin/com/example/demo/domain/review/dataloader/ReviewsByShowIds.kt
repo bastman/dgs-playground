@@ -11,25 +11,28 @@ import org.dataloader.BatchLoaderEnvironment
 import org.dataloader.MappedBatchLoaderWithContext
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.springframework.core.task.SyncTaskExecutor
+import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.Instant
 import java.util.*
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletionStage
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import java.util.concurrent.*
 
 
 @DgsDataLoader(name = "reviewsWithContext")
-class ReviewsByShowIdsDataLoader(private val reviewsByShowIds: ReviewsByShowIds) :
+class ReviewsByShowIdsDataLoader(
+    private val reviewsByShowIds: ReviewsByShowIds
+    ) :
     MappedBatchLoaderWithContext<UUID, List<Review>> {
 
     companion object : KLogging()
 
+
     override fun load(keys: Set<UUID>, environment: BatchLoaderEnvironment): CompletionStage<Map<UUID, List<Review>>> {
-       // logger.info { "START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+       logger.info { "START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
 
         val startedAt = Instant.now()
 
@@ -45,16 +48,17 @@ class ReviewsByShowIdsDataLoader(private val reviewsByShowIds: ReviewsByShowIds)
              //
             out
         }
-       // logger.info { "END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
+       logger.info { "END - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()}" }
         return out
     }
 
     // Note: the common forkjoin pool is used by default.
     // TBD: let's use a dedicated pool for blocking calls to our db
     // https://www.graphql-java.com/blog/threads/
-    private fun <T>executeBlockingAsync(block:()->T):CompletableFuture<T> {
+    fun <T>executeBlockingAsync(block:()->T):CompletableFuture<T> {
         return CompletableFuture.supplyAsync( block,GqlThreadPools.IO)
         //return CompletableFuture.supplyAsync( block)
+
     }
 
 }
@@ -72,7 +76,7 @@ class ReviewsByShowIds {
     fun handle(showIds: List<UUID>): List<Review> {
         val startedAt=Instant.now()
        // logger.info("reviewsForShows - Loading reviews for shows ${showIds.joinToString()}")
-       // logger.info { "reviewsForShows START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
+       logger.info { "reviewsForShows START - thread: ${Thread.currentThread().name} - tx: ${TransactionManager.currentOrNull()} active: ${TransactionSynchronizationManager.isActualTransactionActive()}" }
 
         val table = ReviewTable
 

@@ -12,10 +12,10 @@ services:
         source: ./docker-entrypoint-initdb.d/
         target: /docker-entrypoint-initdb.d/
 
-    tmpfs:
-      - /tmp
-      - /var/run/postgresql
-      - /var/lib/postgresql/data
+#    tmpfs:
+#      - /tmp
+#      - /var/run/postgresql
+#      - /var/lib/postgresql/data
 networks:
   dgs-playground-network: {}
 volumes:
