@@ -1,0 +1,1 @@
+{"query":"query {\n  \n      shows(titleFilter:\"foo\") {\n        __typename\n        showId\n        title\n        releaseYear\n        reviews {\n            __typename\n            reviewId\n            starScore\n            comment\n            submittedDate\n        }\n    }\n  \n}\n\n\n","variables":null}
