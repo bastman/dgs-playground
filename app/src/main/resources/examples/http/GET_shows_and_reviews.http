@@ -1,0 +1,18 @@
+GET http://localhost:8080/graphql
+Content-Type: application/graphql
+
+query {
+    shows(titleFilter:null) {
+        __typename
+        showId
+        title
+        releaseYear
+        reviews {
+            __typename
+            reviewId
+            starScore
+            comment
+            submittedDate
+        }
+    }
+}
